@@ -20,9 +20,7 @@ implements Reducer<Text, IntWritable, Text, IntWritable>{
 			throws IOException {
 		
 		int cnt=0;
-		
-		2006, {1,1,1,1,1,1,1}
-		
+	
 		while(values.hasNext()){
 			cnt += values.next().get();
 		}
