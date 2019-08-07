@@ -1,4 +1,4 @@
-package com.min.Ex06;
+package com.min.Ex07.v2;
 
 import java.io.IOException;
 
@@ -7,43 +7,35 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
-public class Reduce01 extends Reducer<Text, IntWritable, Text, Text> {
+public class Reduce01 extends Reducer<Text, IntWritable, Text, IntWritable> {
 	
-	private MultipleOutputs<Text, Text> multi;
+	private MultipleOutputs<Text, IntWritable> multi;
 	
 	@Override
 	protected void setup(Context ctx){
-		multi = new MultipleOutputs<Text, Text>(ctx);
+		multi = new MultipleOutputs<Text, IntWritable>(ctx);
 	}
 	
 	private void multiCount(String namedOutput, String key, Iterable<IntWritable> values) throws IOException, InterruptedException{
-		int total=0;
-		int tmp=0;
-		
-		String[] cmo = key.split("/");
+		int cnt=0;
 		
 		for(IntWritable v : values)
-			total += v.get();
+			cnt += v.get();
 		
-		if(tmp < total){
-			tmp = total;
-			multi.write(namedOutput, cmo[0], new Text(cmo[1]));
-		}
+		multi.write(namedOutput, key, new IntWritable(cnt));
 		
-		/*	multi.write 파라미터 설명
-		 * 	namedOutput : 출력되는 이름 
-		 *  key : 기존 Key
-		 *  value : 기존 value
-		 * */
+		/*multi.write 파라미터 설명
+	  	  namedOutput : 출력되는 이름 
+		  key : 기존 Key
+		  value : 기존 value*/
+		 
 	}
 	
 	public void reduce(Text key, Iterable<IntWritable> values, Context output) 
 			throws IOException, InterruptedException{
 		String[] cmd = key.toString().split(":");
-		//actual:Uni_Tailnum / flightnum / values(운항 시간 값 : intwritable) 
 		
-		//위에 것과 같은 코드
-		if("actual".equalsIgnoreCase(cmd[0]) || "CRS".equalsIgnoreCase(cmd[0]))	
+		if("yearmonth".equalsIgnoreCase(cmd[0]))	
 			multiCount(cmd[0], cmd[1], values);
 	}
 	
